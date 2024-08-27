@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DetailUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,8 +24,14 @@ Route::prefix('auth')->group(function () {
     Route::post('resend-activation-code', [AuthController::class, 'resendActivationCode']);
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::prefix('users')->group(function () {
+        Route::post('detail-user', [DetailUserController::class, 'addOrUpdateDetailUserInfo']);
+        Route::post('get-detail-user', [DetailUserController::class, 'getDetailUser']);
+        Route::get('all-users', [DetailUserController::class, 'getAllUsers']);
+        Route::get('info', [DetailUserController::class, 'getUser']);
+    });
 });
 
 Route::get('/', function () {

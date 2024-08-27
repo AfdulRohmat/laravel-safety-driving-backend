@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -23,7 +24,6 @@ class User extends Authenticatable
         'password',
         'is_verified',
         'activation_code',
-        'detail_user_id'
     ];
 
     /**
@@ -41,4 +41,9 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [];
+
+    public function detailUser(): HasOne
+    {
+        return $this->hasOne(DetailUser::class, 'user_id');
+    }
 }

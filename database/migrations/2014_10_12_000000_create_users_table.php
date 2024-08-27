@@ -20,7 +20,6 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('is_verified');
             $table->string('activation_code');
-            $table->string('detail_user_id')->nullable();
             $table->timestamps();
         });
     }

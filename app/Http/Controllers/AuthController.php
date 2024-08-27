@@ -91,7 +91,7 @@ class AuthController extends Controller
 
             // 
         } catch (\Exception $e) {
-            $errorResponse = new CommonResponse(404, 'Proses gagal', null, ['User not found']);
+            $errorResponse = new CommonResponse(404, 'Proses gagal', null, [$e->getMessage()]);
             return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
         }
     }
@@ -136,48 +136,61 @@ class AuthController extends Controller
                 return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
             }
         } catch (\Exception $e) {
-            $errorResponse = new CommonResponse(404, 'Proses gagal', null, ['User not found']);
+            $errorResponse = new CommonResponse(404, 'Proses gagal', null, [$e->getMessage()]);
             return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
         }
     }
 
     public function resendActivationCode(Request $request)
     {
-        // Validate the request
-        $request->validate([
-            'email' => 'required|string|email|max:255',
-        ]);
+        try {
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string|email|max:255',
+            ]);
 
-        // Find the user by email
-        $user = User::where('email', $request->email)->first();
+            // Handle validation errors
+            if ($validator->fails()) {
+                $errorResponse = new CommonResponse(422, 'Validation error', null, $validator->errors()->all());
+                return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
+            }
 
-        // Check if user exists
-        if (!$user) {
-            $errorResponse = new CommonResponse(400, 'Proses gagal', null, ['Akun belum terdaftar. Silahkan register']);
+            // Find the user by email
+            $user = User::where('email', $request->email)->first();
+
+            // Check if user exists
+            if (!$user) {
+                $errorResponse = new CommonResponse(400, 'Proses gagal', null, ['Akun belum terdaftar. Silahkan register']);
+                return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
+            }
+
+            // Check if the account is already verified
+            if ($user->is_verified) {
+                $errorResponse = new CommonResponse(400, 'Proses gagal', null, ['Akun sudah terverifikasi. Silahkan login']);
+                return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
+            }
+
+            // Generate a new activation code
+            $activationCode = rand(100000, 999999);
+
+            // Update the user's activation code
+            $user->activation_code = $activationCode;
+            $user->save();
+
+            // Send the activation code via email
+            Mail::to($user->email)->send(new ActivationCodeMail($activationCode));
+
+            // Prepare the success response
+            $successResponse = new CommonResponse(200, 'Activation Code berhasil dikirim ulang, Mohon check email anda', [
+                'email' => $user->email
+            ], null);
+
+            return response()->json($successResponse->toArray(), $successResponse->statusCode);
+            //
+        } catch (\Exception $e) {
+            // Handle other exceptions
+            $errorResponse = new CommonResponse(500, 'Proses gagal', null, [$e->getMessage()]);
             return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
         }
-
-        // Check if the account is already verified
-        if ($user->is_verified) {
-            $errorResponse = new CommonResponse(400, 'Proses gagal', null, ['Akun sudah terverifikasi. Silahkan login']);
-            return response()->json($errorResponse->toArray(), $errorResponse->statusCode);
-        }
-
-        // Generate a new activation code
-        $activationCode = rand(100000, 999999);
-
-        // Update the user's activation code
-        $user->activation_code = $activationCode;
-        $user->save();
-
-        // Send the activation code via email
-        Mail::to($user->email)->send(new ActivationCodeMail($activationCode));
-
-        // Prepare the success response
-        $successResponse = new CommonResponse(200, 'Activation Code berhasil dikirim ulang, Mohon check email anda', [
-            'email' => $user->email
-        ], null);
-
-        return response()->json($successResponse->toArray(), $successResponse->statusCode);
     }
 }
