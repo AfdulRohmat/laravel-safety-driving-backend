@@ -16,9 +16,9 @@ class DetailUserController extends Controller
     public function getUser(Request $request)
     {
         try {
-            $currentUserId =  Auth::user()->email;
+            $currentUserEmail =  Auth::user()->email;
 
-            $user = User::where('email', $currentUserId)->with('detailUser')->firstOrFail();
+            $user = User::where('email', $currentUserEmail)->with('detailUser')->firstOrFail();
 
             // Return success response with user data
             $successResponse = new CommonResponse(200, 'User retrieved successfully', $user, null);

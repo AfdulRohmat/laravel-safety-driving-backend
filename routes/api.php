@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DetailUserController;
+use App\Http\Controllers\GroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('get-detail-user', [DetailUserController::class, 'getDetailUser']);
         Route::get('all-users', [DetailUserController::class, 'getAllUsers']);
         Route::get('info', [DetailUserController::class, 'getUser']);
+    });
+
+    Route::prefix('groups')->group(function () {
+        Route::post('/', [GroupController::class, 'createGroup']);
+        Route::get('/', [GroupController::class, 'getGroupsByUserLogin']);
+        Route::post('/adding-user', [GroupController::class, 'addUserToGroupMemberByUsername']);
+        Route::post('/remove-user', [GroupController::class, 'removeUserFromGroupMember']);
+        Route::post('/detail', [GroupController::class, 'getDetailGroup']);
     });
 });
 
