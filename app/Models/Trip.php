@@ -9,6 +9,9 @@ class Trip extends Model
 {
     use HasFactory;
 
+    // If the primary key is not 'id', specify it here
+    protected $primaryKey = 'trip_id';
+
     protected $fillable = [
         'jadwal_perjalanan',
         'alamat_awal',

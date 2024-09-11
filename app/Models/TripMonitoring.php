@@ -9,6 +9,9 @@ class TripMonitoring extends Model
 {
     use HasFactory;
 
+    // If the primary key is not 'id', specify it here
+    protected $primaryKey = 'trip_monitoring_id';
+
     protected $fillable = [
         'heart_rate',
         'latitude',

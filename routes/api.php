@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DetailUserController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\TripController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/adding-user', [GroupController::class, 'addUserToGroupMemberByUsername']);
         Route::post('/remove-user', [GroupController::class, 'removeUserFromGroupMember']);
         Route::post('/detail', [GroupController::class, 'getDetailGroup']);
+    });
+
+    Route::prefix('trips')->group(function () {
+        Route::post('/add-trip', [TripController::class, 'addTrip']);
+        Route::post('/', [TripController::class, 'getAllTrips']);
+        Route::post('/detail', [TripController::class, 'getTripByToken']);
+        Route::post('/change-status', [TripController::class, 'changeTripStatus']);
+        Route::post('/delete-trip', [TripController::class, 'deleteTrip']);
+
+        Route::post('/add-trip-monitoring', [TripController::class, 'addTripMonitoring']);
+        Route::post('/add-face-monitoring', [TripController::class, 'addFaceMonitoring']);
+
+        Route::get('/monitoring-trip', [TripController::class, 'getTripMonitoringSSE']);
+        Route::get('/monitoring-face', [TripController::class, 'getFaceMonitoringSSE']);
     });
 });
 

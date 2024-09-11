@@ -13,7 +13,7 @@ class CreateTripMonitoringsTable extends Migration
      */
     public function up()
     {
-        Schema::create('trip_monitoring', function (Blueprint $table) {
+        Schema::create('trip_monitorings', function (Blueprint $table) {
             $table->id('trip_monitoring_id');
             $table->string('heart_rate');
             $table->string('latitude');

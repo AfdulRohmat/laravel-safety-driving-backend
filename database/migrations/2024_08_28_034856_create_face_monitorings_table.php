@@ -13,7 +13,7 @@ class CreateFaceMonitoringsTable extends Migration
      */
     public function up()
     {
-        Schema::create('face_monitoring', function (Blueprint $table) {
+        Schema::create('face_monitorings', function (Blueprint $table) {
             $table->id();
             $table->string('perclos');
             $table->string('trip_token');
